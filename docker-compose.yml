@@ -1,0 +1,29 @@
+services:
+  forensics-demo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./nextjs:/app
+    restart: unless-stopped
+
+  mongodb:
+    build:
+      context: ./mongo_db
+      dockerfile: Dockerfile
+    container_name: mongodb_dev_Forensics
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=Forensics_db
+    depends_on:
+      - nextjs-app
+
+volumes:
+  mongodb_data:
