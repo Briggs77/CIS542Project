@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             throw new Error('Request body NULL');
         }
 
-        const { collection, id, ...data } = req.body;
+        const { collection, id, fields, ...data } = req.body;
 
         if (!collection) {
             return res.status(400).json({ message: 'Collection name is empty or not provided' });
@@ -23,9 +23,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(400).json({ message: 'Document ID is empty or not provided' });
         }
 
-        console.log('Updating document with ID:', id, 'in collection:', collection, 'with data:', data);
+        console.log('Updating document with ID:', id, 'in collection:', collection, 'with data:', { ...fields, ...data });
 
-        await mongoDBService.updateDocument(collection, id, data);
+        await mongoDBService.updateDocument(collection, id, { ...fields, ...data });
 
         res.status(200).json({ message: 'Document updated successfully' });
     } catch (error) {

@@ -21,37 +21,27 @@ class MongoDBService {
         }
     }
 
-    private async ensureInitialized() {
-        if (!this.db) {
-            await this.init();  
-            if (!this.db) {
-                throw new Error('Failed to initialize the database');
-            }
-        }
-    }
+
 
     async getDocumentId(collectionName: string, query: Filter<Document>): Promise<ObjectId | null> {
-        await this.ensureInitialized();  
         const collection = this.db!.collection<Document>(collectionName);  
         const document = await collection.findOne(query, { projection: { _id: 1 } });
         return document ? document._id : null;
     }
 
     async getAllIDs(collectionName: string): Promise<ObjectId[]> {
-        await this.ensureInitialized();  
         const collection = this.db!.collection<Document>(collectionName);  
         const documents = await collection.find({}, { projection: { _id: 1 } }).toArray();
         return documents.map(doc => doc._id);
     }
 
     async createDocument(collectionName: string, document: Document): Promise<InsertOneResult<Document>> {
-        await this.ensureInitialized();  
-        const collection = this.db!.collection<Document>(collectionName);  
-        return await collection.insertOne(document);
+        const collection = this.db!.collection<Document>(collectionName);
+    
+        return await collection.insertOne({ ...document });
     }
 
     async updateDocument(collectionName: string, id: string, updateData: Partial<Document>): Promise<UpdateResult> {
-        await this.ensureInitialized(); 
         const collection = this.db!.collection<Document>(collectionName); 
     
         const objectId = new ObjectId(id);
@@ -60,16 +50,21 @@ class MongoDBService {
     }
 
     async readDocument(collectionName: string, query: Filter<Document>): Promise<Document | null> {
-        await this.ensureInitialized();  
         const collection = this.db!.collection<Document>(collectionName); 
         return await collection.findOne(query);
     }
 
     async deleteDocument(collectionName: string, query: Filter<Document>): Promise<DeleteResult> {
-        await this.ensureInitialized(); 
         const collection = this.db!.collection<Document>(collectionName);  
         return await collection.deleteOne(query);
     }
+
+    async getUserByUsername(username: string): Promise<Document | null> {
+        const collection = this.db!.collection<Document>('users'); 
+        const user = await collection.findOne({ username: username });
+        return user;
+    }
 }
+
 
 export default new MongoDBService();

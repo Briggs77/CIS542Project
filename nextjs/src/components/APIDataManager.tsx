@@ -8,9 +8,7 @@ async function getDocumentIds(collection: string) {
     return data.documentIds;
   }
   console.error('Error fetching document IDs:', response.statusText);
-
-
-};
+}
 
 async function addDocument(collection: string, data: object) {
   const response = await fetch('/api/AddDocument', {
@@ -23,11 +21,9 @@ async function addDocument(collection: string, data: object) {
 
   if (response.ok) {
     return await response.json();
-
   }
-  console.error('Error adding document:', response.statusText);
-
-};
+  console.error('Error Adding Document:', response.statusText);
+}
 
 async function updateDocument(collection: string, id: string, data: object) {
   const response = await fetch('/api/UpdateDocument', {
@@ -41,9 +37,8 @@ async function updateDocument(collection: string, id: string, data: object) {
   if (response.ok) {
     return await response.json();
   }
-  console.error('Error updating document:', response.statusText);
-
-};
+  console.error('Error Updating Document:', response.statusText);
+}
 
 async function getDocument(collection: string, id: string) {
   const response = await fetch('/api/GetDocument', {
@@ -51,21 +46,53 @@ async function getDocument(collection: string, id: string) {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ collection, id}),
+    body: JSON.stringify({ collection, id }),
   });
 
   if (response.ok) {
     return await response.json();
   }
-  console.error('Error getting document:', response.statusText);
+  console.error('Error Getting Document:', response.statusText);
+}
 
-};
+async function login(username: string, password: string) {
+  const response = await fetch('/api/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ username, password }),
+  })
+
+
+    const data = await response.json();
+    return data;
+  
+}
+
+
+async function register(username: string, password: string, email: string) {
+  const response = await fetch('/api/Register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ username, password, email }),
+  })
+
+
+    const data = await response.json();
+    return data;
+}
+
 
 const apidatamanager = {
   addDocument,
   updateDocument,
   getDocumentIds,
   getDocument,
+  login, 
+  register,
 };
 
 export default apidatamanager;

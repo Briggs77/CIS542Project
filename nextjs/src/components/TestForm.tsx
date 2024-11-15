@@ -1,51 +1,70 @@
+//https://www.w3schools.com/react/react_forms.asp
+//https://www.w3schools.com/react/react_useeffect.asp
+
 import { useState } from 'react';
-import DynamicObject from '../shared_components/DynamicObject'; 
+import DropdownSelector from '../components/DropdownSelector';
+import DynamicObject from '../shared_components/DynamicObject';
+import apidatamanager from './APIDataManager';
 
-const TestForm: React.FC = () => {
-  const [input1, setInput1] = useState('');  
-  const [input2, setInput2] = useState('');  
+interface TestFormProps {
+  collection: string; 
+}
+
+const TestForm: React.FC<TestFormProps> = ({ collection }) => {
+  const [input1, setInput1] = useState('');
+  const [input2, setInput2] = useState('');
   const [dynamicObject] = useState(new DynamicObject());
-  const [message, setMessage] = useState(''); 
+  const [message, setMessage] = useState('');
+  const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  function handleSelectId(id: string | null) {
+    setSelectedDocumentId(id);
+  };
+
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
-    dynamicObject.addField('field1', input1);
-    dynamicObject.addField('field2', input2);
+    dynamicObject.addField('IpAddress', input1);
+    dynamicObject.addField('AccessTime', input2);
 
-    const response = await fetch('/api/TestAPI', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(dynamicObject), 
-    });
-
-    const result = await response.json(); 
-    setMessage(result.message); 
+    let result;
+    if (selectedDocumentId != null) {
+      console.log("ID before updateDocument:", selectedDocumentId);
+      result = await apidatamanager.updateDocument(collection, selectedDocumentId, dynamicObject);
+    } 
+    else if (selectedDocumentId == null)
+    {
+      console.log("ID before addDocument:", selectedDocumentId);
+      result = await apidatamanager.addDocument(collection, dynamicObject);
+    }
+    
+    setMessage(result.message);
   };
 
   return (
     <div>
+      <DropdownSelector
+        collection={collection}
+        onSelect={handleSelectId}
+      />
+      <br />
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           value={input1}
           onChange={(e) => setInput1(e.target.value)}
-          placeholder="Enter first text"
         />
         <br />
         <input
           type="text"
           value={input2}
           onChange={(e) => setInput2(e.target.value)}
-          placeholder="Enter second text"
         />
         <br />
         <button type="submit">Add to Object and Send to API</button>
       </form>
 
-      {message && <p>{message}</p>} 
+      {message && <p>{message}</p>}
     </div>
   );
 };

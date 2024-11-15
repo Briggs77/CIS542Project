@@ -13,16 +13,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             throw new Error('Request body NULL');
         }
 
-        const { collection, ...data } = req.body;
-        
+        const { collection, fields, ...data } = req.body;
+
         if (!collection) {
             return res.status(400).json({ message: 'Collection name is empty or not provided' });
         }
-        
 
-        console.log('Received data from Client:', data);
+        console.log('Received data from Client:', { ...fields, ...data });
 
-        await mongoDBService.createDocument(collection, data);
+        await mongoDBService.createDocument(collection, { ...fields, ...data });
 
         res.status(200).json({ message: 'Data processed and stored successfully' });
     } catch (error) {
