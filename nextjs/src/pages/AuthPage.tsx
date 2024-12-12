@@ -1,34 +1,29 @@
-import React, { useState } from 'react';
+import React from 'react';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
+import TokenInspector from '../components/TokenInspector';
+import Navbar from '../components/Navbar';
+import TestForm from '../components/TestForm';
 
 const AuthPage: React.FC = () => {
-  const [isLogin, setIsLogin] = useState(true);
-
-  const toggleForm = () => {
-    setIsLogin(!isLogin);
-  };
-
   return (
     <div>
-      <h1>{isLogin ? 'Login' : 'Register'}</h1>
-      {isLogin ? (
-        <>
-          <LoginForm />
-          <p>
-            Need an account?{' '}
-            <button onClick={toggleForm}>Register</button>
-          </p>
-        </>
-      ) : (
-        <>
-          <RegisterForm />
-          <p>
-            Have an account already?{' '}
-            <button onClick={toggleForm}>Login</button>
-          </p>
-        </>
-      )}
+      <Navbar />
+      <div>
+        <h1>Login</h1>
+        <LoginForm />
+        <p>Need an account? Register below.</p>
+        <h1>Register</h1>
+        <RegisterForm />
+        <p>Already have an account? Login above.</p>
+      </div>
+      <div>
+        <TokenInspector />
+      </div>
+      <div>
+        <h2>Test Form</h2>
+        <TestForm collection="test3" />
+      </div>
     </div>
   );
 };

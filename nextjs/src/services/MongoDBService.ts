@@ -21,14 +21,6 @@ class MongoDBService {
         }
     }
 
-
-
-    async getDocumentId(collectionName: string, query: Filter<Document>): Promise<ObjectId | null> {
-        const collection = this.db!.collection<Document>(collectionName);  
-        const document = await collection.findOne(query, { projection: { _id: 1 } });
-        return document ? document._id : null;
-    }
-
     async getAllIDs(collectionName: string): Promise<ObjectId[]> {
         const collection = this.db!.collection<Document>(collectionName);  
         const documents = await collection.find({}, { projection: { _id: 1 } }).toArray();
@@ -38,16 +30,20 @@ class MongoDBService {
     async createDocument(collectionName: string, document: Document): Promise<InsertOneResult<Document>> {
         const collection = this.db!.collection<Document>(collectionName);
     
+        if (document._id && typeof document._id === 'string') {
+            document._id = new ObjectId(document._id);
+        }
+    
         return await collection.insertOne({ ...document });
     }
+    
 
-    async updateDocument(collectionName: string, id: string, updateData: Partial<Document>): Promise<UpdateResult> {
-        const collection = this.db!.collection<Document>(collectionName); 
-    
-        const objectId = new ObjectId(id);
-    
-        return await collection.updateOne({ _id: objectId }, { $set: updateData });
+    async updateDocument(collectionName: string, id: string, updateData: UpdateFilter<Document>): Promise<UpdateResult> {
+        const collection = this.db!.collection<Document>(collectionName);
+        const objectId = new ObjectId(id);    
+        return await collection.updateOne({ _id: objectId }, updateData);
     }
+    
 
     async readDocument(collectionName: string, query: Filter<Document>): Promise<Document | null> {
         const collection = this.db!.collection<Document>(collectionName); 

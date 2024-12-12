@@ -22,8 +22,7 @@ services:
       - mongodb_data:/data/db
     environment:
       - MONGO_INITDB_DATABASE=Forensics_db
-    depends_on:
-      - nextjs-app
+
 
 volumes:
   mongodb_data:
