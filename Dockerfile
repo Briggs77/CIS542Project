@@ -1,5 +1,5 @@
 FROM node:18
-
+#
 WORKDIR /app
 COPY nextjs/package*.json ./
 RUN npm install
