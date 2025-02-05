@@ -9,6 +9,8 @@ services:
       - NODE_ENV=production
     volumes:
       - ./nextjs:/app
+      - /app/node_modules  
+      - /app/.next         
     restart: unless-stopped
 
   mongodb:
@@ -22,7 +24,6 @@ services:
       - mongodb_data:/data/db
     environment:
       - MONGO_INITDB_DATABASE=Forensics_db
-
 
 volumes:
   mongodb_data:
